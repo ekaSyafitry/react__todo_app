@@ -1,0 +1,494 @@
+body {
+  margin: 0;
+  background-color: #eee;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  // overflow-x: hidden;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.container {
+    max-width: 500px;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0 auto;
+    background: #fff;
+    display: grid;
+    grid-template-rows: 2fr 4fr;
+  }
+
+  .calender-box {
+    background: linear-gradient(71deg, rgba(250, 94, 111, 1) 30%, rgba(251, 149, 97, 1) 70%);
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    padding: 0 25px;
+    position: relative;
+
+    .capt {
+      margin-top: 14px;
+      font-size: 11px;
+      width: 100px;
+      color: #fff;
+      font-style: italic;
+      opacity: 0.7;
+    }
+
+    h1 {
+      color: #fff;
+      align-self: center;
+    }
+
+    .box-date {
+      align-self: flex-end;
+      color: white;
+      margin-left: 20px;
+      margin-bottom: 30px;
+      display: grid;
+
+      .date {
+        text-align: end;
+
+        i {
+          font-size: 30px;
+          margin-bottom: 5px;
+        }
+      }
+
+      .cal {
+        align-self: end;
+        text-align: end;
+
+        .date-cal {
+          text-align: right !important;
+          margin-bottom: 30px;
+
+          i {
+            font-size: 30px;
+          }
+
+          .input-date {
+            display: none;
+          }
+
+          .vdp-datepicker__calendar {
+            right: 0;
+            color: #6D4C41;
+            max-width: 250px;
+
+            .cell {
+              height: 30px !important;
+              line-height: 30px !important;
+            }
+
+            .cell.selected {
+              background: #EF5350 !important;
+              color: #fff;
+            }
+          }
+        }
+      }
+    }
+
+    .circle {
+      display: flex;
+      position: absolute;
+      bottom: -15px;
+      padding-left: 5px;
+
+      div {
+        padding: 5px 15px;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 3px 3px 7px #EF5350;
+        margin-right: 5px;
+        font-size: 14px;
+        color: #6D4C41;
+        font-weight: 600;
+      }
+
+      .active {
+        background-color: #6D4C41;
+        color: #fff;
+      }
+
+    }
+
+  }
+
+  .card {
+    padding: 40px 25px 25px 25px;
+    overflow-y: scroll;
+
+    .empty {
+      margin-top: 30px;
+      font-size: 18px;
+      color: #EF5350;
+    }
+
+    .card-list {
+      margin-bottom: 20px;
+
+      .title {
+        text-transform: uppercase;
+        font-weight: 900;
+        color: #EF5350;
+        margin-bottom: 7px;
+      }
+
+      .title.cross,
+      .card-desc.cross {
+        text-decoration: line-through;
+        text-decoration-color: #6D4C41;
+      }
+
+      .card-desc {
+        font-size: 14px;
+        color: #EF5350;
+        line-height: 15px;
+      }
+
+      .btn-group {
+        background: #d2691e17;
+        margin-top: 10px;
+        display: flex;
+        width: 114px;
+        justify-content: space-between;
+        padding: 2px 20px;
+
+        i {
+          font-size: 14px;
+          color: #EF5350;
+        }
+      }
+
+    }
+
+    .btn-float {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      margin-bottom: 15px;
+      margin-right: 15px;
+
+    }
+
+    button {
+      @extend %btn;
+      padding: 14px 16px;
+
+      i {
+        font-size: 20px;
+        color: #fff;
+      }
+    }
+  }
+
+  %btn {
+    background: linear-gradient(71deg, #fa5e6f 30%, #fb9561 70%);
+    border-radius: 50%;
+    border: none;
+    box-shadow: 2px 6px 9px 2px #ef535061;
+  }
+
+  .bg-modal,
+  .bg-modalComplete {
+    opacity: 0;
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    text-align: left;
+    background: #000000ab;
+    transition: opacity .25s ease;
+  }
+
+  .bg-modal.active,
+  .bg-modalComplete.active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .25s ease;
+  }
+
+  .add-modal.active,
+  .modalComplete.active {
+    opacity: 1;
+    visibility: visible;
+    top: 0;
+    transition: top .25s ease;
+  }
+
+  %modal {
+    visibility: hidden;
+    background-color: #fff;
+    transition: top .25s ease;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    overflow: auto;
+    border-radius: 5px;
+    padding: 1em;
+    opacity: 0;
+    width: 93%;
+  }
+
+  .add-modal {
+    @extend %modal;
+    height: 82%;
+    overflow: hidden;
+
+    h2 {
+      margin-bottom: 19px;
+      color: #6D4C41;
+      text-align: center;
+    }
+
+    div {
+      margin-bottom: 15px;
+
+      input,
+      textarea {
+        font-size: 16px;
+        display: inherit;
+        margin-top: 10px;
+        width: 100%;
+        padding: 3px;
+        border: 0;
+        background: #d2691e17;
+      }
+
+      .title-mdl {
+        color: #EF5350;
+        font-weight: 900;
+        margin-bottom: 10px;
+
+        i {
+          font-size: 12px;
+          margin-right: 5px;
+
+        }
+      }
+    }
+
+    .btn-modal {
+      position: absolute;
+      bottom: -15px;
+      right: 0;
+
+      button {
+        @extend %btn;
+        padding: 14px;
+
+        i {
+          font-size: 20px;
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  %btnConfirm {
+    font-weight: 600;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  .modalComplete {
+    @extend %modal;
+    height: 25%;
+
+    .title {
+      margin-bottom: 30px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #EF5350;
+    }
+
+    .btnY {
+      @extend %btn;
+      @extend %btnConfirm;
+      padding: 14px 12px;
+    }
+
+    .btnN {
+      @extend %btn;
+      padding: 14px 14px;
+      margin-left: 20px;
+      @extend %btnConfirm;
+    }
+  }
+
+  .timeWrap {
+    .time {
+      width: 100%;
+      top: -200px !important;
+
+      // height: 100px;
+      .cell {
+        height: 30px !important;
+        line-height: 30px !important;
+      }
+
+      .cell.selected {
+        background: #EF5350 !important;
+        color: #fff;
+      }
+    }
+  }
+
+  button:focus {
+    outline: none;
+  }
+  .wrapLoad{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .lds-roller {
+    width: 80px;
+    height: 80px;
+  }
+
+  .lds-roller div {
+    animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    transform-origin: 40px 40px;
+  }
+
+  .lds-roller div:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #EF5350;
+    margin: -4px 0 0 -4px;
+  }
+
+  .lds-roller div:nth-child(1) {
+    animation-delay: -0.036s;
+  }
+
+  .lds-roller div:nth-child(1):after {
+    top: 63px;
+    left: 63px;
+  }
+
+  .lds-roller div:nth-child(2) {
+    animation-delay: -0.072s;
+  }
+
+  .lds-roller div:nth-child(2):after {
+    top: 68px;
+    left: 56px;
+  }
+
+  .lds-roller div:nth-child(3) {
+    animation-delay: -0.108s;
+  }
+
+  .lds-roller div:nth-child(3):after {
+    top: 71px;
+    left: 48px;
+  }
+
+  .lds-roller div:nth-child(4) {
+    animation-delay: -0.144s;
+  }
+
+  .lds-roller div:nth-child(4):after {
+    top: 72px;
+    left: 40px;
+  }
+
+  .lds-roller div:nth-child(5) {
+    animation-delay: -0.18s;
+  }
+
+  .lds-roller div:nth-child(5):after {
+    top: 71px;
+    left: 32px;
+  }
+
+  .lds-roller div:nth-child(6) {
+    animation-delay: -0.216s;
+  }
+
+  .lds-roller div:nth-child(6):after {
+    top: 68px;
+    left: 24px;
+  }
+
+  .lds-roller div:nth-child(7) {
+    animation-delay: -0.252s;
+  }
+
+  .lds-roller div:nth-child(7):after {
+    top: 63px;
+    left: 17px;
+  }
+
+  .lds-roller div:nth-child(8) {
+    animation-delay: -0.288s;
+  }
+
+  .lds-roller div:nth-child(8):after {
+    top: 56px;
+    left: 12px;
+  }
+
+  @keyframes lds-roller {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .custom-input{
+      i{
+        font-size: 30px;
+        margin-bottom: 30px; 
+      }
+  }
+
+  .getDate{
+    left: -183px !important;
+    top: -32px !important;
+    border: 1px solid #ccc;
+    .react-datepicker__triangle{
+      display: none;
+    }
+    .react-datepicker__day--selected, .react-datepicker__day--keyboard-selected{
+      color: #fff !important;
+      background-color: #E53935 !important;
+      border-radius: 0;
+    }
+    .react-datepicker__current-month, .react-datepicker__day-name, .react-datepicker__day{
+      color: #6D4C41 ;
+      line-height: 1.4rem !important;
+      font-size: 12px;
+    }
+    .react-datepicker__header {
+      background-color: #fff;
+      border-bottom: none;
+    .react-datepicker__current-month{
+      margin-bottom: 15px;
+    }
+   
+  }
+
+  }
+
