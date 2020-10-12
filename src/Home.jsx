@@ -54,10 +54,10 @@ class Home extends Component{
         });
     }
     installModal = async () =>{
-        this.state.deferredPrompt.prompt();
         await this.setState({
             installActive :  false,
         })
+        this.state.deferredPrompt.prompt();
     }
    showInstallPromt = async (e) =>{
         await this.setState({

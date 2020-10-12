@@ -105,8 +105,8 @@
   .add-modal {
     @extend %modal;
     z-index: 1;
-    height: 480px;
-    overflow: hidden;
+    max-height: 490px;
+    overflow: auto;
 
     h2 {
       margin-bottom: 19px;

@@ -20,7 +20,7 @@ const ModalConf = (props) => {
             </div>
             : 
             <div>
-                 <div class="title"> Do you like this application?</div>
+                 <div className="title"> Do you like this application?</div>
             </div>
             } 
             {props.type === 'install'?

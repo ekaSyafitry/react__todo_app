@@ -82,7 +82,6 @@ const Modal = (props) => {
                              calendarClassName="setDate"
                              minDate={new Date()}
                              dateFormat="MMM dd yyyy"
-
                           />
                         
                      </div> 
