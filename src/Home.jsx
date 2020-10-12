@@ -34,20 +34,38 @@ class Home extends Component{
         percent: 0,
         sum: 0,
         installActive: false,
-        deferredPrompt : null,
-        myStyle: ''
+        deferredPrompt : null
     }
-  async  componentDidMount() {
+  async componentDidMount() {
         await this.setState({
             isLoad : true,
         })
         await this.formateDate(this.state.startDate)
         await  this.getData(this.state.startDate)
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            this.showInstallPromt(e);
+        });
+          
+      window.addEventListener('appinstalled', async (evt) => {
+            await this.setState({
+                installActive :  !this.state.installActive,
+            })
+        });
     }
-    componentDidUpdate(prevProps, prevState) {
-    //    console.log(prevProps,prevState.startDate )
+    installModal = async () =>{
+        this.deferredPrompt.prompt();
+        await this.setState({
+            installActive :  false,
+        })
     }
-    async countProgress(){
+   showInstallPromt = async (e) =>{
+        await this.setState({
+            deferredPrompt :  e,
+            installActive :  !this.state.installActive
+        })
+    }
+    countProgress = async () =>{
         if (this.state.current === 'all'){
             await this.setState({
                 totalComplete : this.state.todolist_completed.length,
@@ -380,6 +398,13 @@ return(
                     })
              }
              }/>
+
+             <ModalConf type={'install'} confirmActive={this.state.installActive}  yesBtn={this.installModal} cancelBtn={async () => {
+                      await this.setState ({
+                        installActive : false
+                    })
+             }
+             } />
     </div>
 </Fragment>
 )

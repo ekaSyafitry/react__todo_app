@@ -14,13 +14,28 @@ const ModalConf = (props) => {
             <div >
                 <div className="title"> Add to incomplete task?</div>
             </div>
-            :
+            : props.type === 'trash' ?
             <div >
                 <div className="title"> Are you sure to delete data?</div>
             </div>
+            : 
+            <div>
+                 <div class="title"> Do you like this application?</div>
+            </div>
             } 
-            <button className="btnY" onClick={()=> props.yesBtn()}>Yes</button> 
-            <button className="btnN" onClick={()=> props.cancelBtn()}>No</button> 
+            {props.type === 'install'?
+            <div style={{display:'flex', justifyContent: 'space-between'}}> 
+                <button className="btnY" onClick={()=> props.yesBtn()}>Download Now</button> 
+                <button className="btnN" onClick={()=> props.cancelBtn()}>No</button> 
+            </div>
+            :
+            <div>
+                <button className="btnYes" onClick={()=> props.yesBtn()}>Yes</button> 
+                <button className="btnN" onClick={()=> props.cancelBtn()}>Cancel</button> 
+            </div>
+        }
+    
+            
         </div>
     </div>
     )

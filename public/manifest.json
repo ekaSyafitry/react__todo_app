@@ -1,6 +1,6 @@
 {
-  "name": " Vue To-do App",
-  "short_name": "Vue To-do",
+  "name": "React To-do App",
+  "short_name": "React To-do",
   "start_url": "/",
   "icons": [
     {
