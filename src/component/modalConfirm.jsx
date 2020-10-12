@@ -26,7 +26,7 @@ const ModalConf = (props) => {
             {props.type === 'install'?
             <div style={{display:'flex', justifyContent: 'space-between'}}> 
                 <button className="btnY" onClick={()=> props.yesBtn()}>Download Now</button> 
-                <button className="btnN" onClick={()=> props.cancelBtn()}>No</button> 
+                <button className="btnN" onClick={()=> props.cancelBtn()}>Cancel</button> 
             </div>
             :
             <div>
