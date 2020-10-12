@@ -33,14 +33,12 @@ const Modal = (props) => {
               date: frmt_date,
               complete: false
             })
+            props.updateStartDate(startDate)
             alert('Success add data !!')
             setName('')
             setNotes('')
             setStartDate(new Date())
-            // notes = ''
-            // startDate = new Date()
             props.changeModal()
-            // fetchData()
         }
         else{
             e.preventDefault()
@@ -50,6 +48,7 @@ const Modal = (props) => {
               notes: data_notes,
               date: frmt_date
             });
+            props.updateStartDate(data_date)
             alert('Success edit data !!')
             props.changeModal()
             // console.log(data_name)

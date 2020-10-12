@@ -8,14 +8,14 @@ import * as serviceWorker from './serviceWorker';
 
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   var firebaseConfig = {
-    apiKey: "AIzaSyCu-mkd53d_zjG-t2L_iEbbdSo328vdRPs",
-    authDomain: "todo-app-f0fbb.firebaseapp.com",
-    databaseURL: "https://todo-app-f0fbb.firebaseio.com",
-    projectId: "todo-app-f0fbb",
-    storageBucket: "todo-app-f0fbb.appspot.com",
-    messagingSenderId: "523414125327",
-    appId: "1:523414125327:web:1a248a8ff599c92234dc7a",
-    measurementId: "G-SQE8C7JJ3W"
+    apiKey: "AIzaSyDknpUUbmZasRh8o67EeuiT2t0Ru08hjvM",
+    authDomain: "react-todo-app-4be77.firebaseapp.com",
+    databaseURL: "https://react-todo-app-4be77.firebaseio.com",
+    projectId: "react-todo-app-4be77",
+    storageBucket: "react-todo-app-4be77.appspot.com",
+    messagingSenderId: "501915973205",
+    appId: "1:501915973205:web:1ef90a1050f49f8d81c6dc",
+    measurementId: "G-ZTC1FRSV58"
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
@@ -26,4 +26,4 @@ ReactDOM.render(<Home />, document.getElementById('root')
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+serviceWorker.register();

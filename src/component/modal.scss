@@ -55,3 +55,155 @@
     margin-bottom: 0px !important;
   }
 }
+
+.bg-modal,
+  .bg-modalComplete {
+    opacity: 0;
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    text-align: left;
+    background: #000000ab;
+    transition: opacity .25s ease;
+  }
+
+  .bg-modal.active,
+  .bg-modalComplete.active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .25s ease;
+  }
+
+  .add-modal.active,
+  .modalComplete.active {
+    opacity: 1;
+    visibility: visible;
+    top: 0;
+    transition: top .25s ease;
+  }
+
+  %modal {
+    visibility: hidden;
+    background-color: #fff;
+    transition: top .25s ease;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    overflow: auto;
+    border-radius: 5px;
+    padding: 1em;
+    opacity: 0;
+    width: 93%;
+  }
+
+  .add-modal {
+    @extend %modal;
+    z-index: 1;
+    height: 480px;
+    overflow: hidden;
+
+    h2 {
+      margin-bottom: 19px;
+      color: #6D4C41;
+      text-align: center;
+    }
+
+    div {
+      margin-bottom: 15px;
+
+      input,
+      textarea {
+        font-size: 16px;
+        display: inherit;
+        margin-top: 10px;
+        width: 100%;
+        padding: 3px;
+        border: 0;
+        background: #d2691e17;
+      }
+
+      .title-mdl {
+        color: #EF5350;
+        font-weight: 900;
+        margin-bottom: 10px;
+
+        i {
+          font-size: 12px;
+          margin-right: 5px;
+
+        }
+      }
+    }
+
+    .btn-modal {
+      position: absolute;
+      bottom: -15px;
+      right: 0;
+
+      button {
+        @extend %btn;
+        padding: 14px;
+
+        i {
+          font-size: 20px;
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  %btnConfirm {
+    font-weight: 600;
+    border-radius: 17px;
+    font-size: 14px;
+  }
+
+  .modalComplete {
+    @extend %modal;
+    height: 130px;
+
+    .title {
+      margin-bottom: 30px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #EF5350;
+    }
+
+    .btnY {
+      border: none;
+      background: linear-gradient(71deg, #fa5e6f 30%, #fb9561 70%);
+      @extend %btnConfirm;
+      color: #fff;
+      padding: 10px;
+    }
+
+    .btnYes {
+      border: none;
+      background: linear-gradient(71deg, #fa5e6f 30%, #fb9561 70%);
+      @extend %btnConfirm;
+      color: #fff;
+      padding: 10px 20px;
+    }
+
+    .btnN {
+      border: 1px solid #EF5350;
+      background-color: #fff;
+      color: #EF5350;
+      padding: 10px;
+      margin-left: 20px;
+      @extend %btnConfirm;
+    }
+  }
+
+  %btn {
+    background: linear-gradient(71deg, #fa5e6f 30%, #fb9561 70%);
+    border-radius: 50%;
+    border: none;
+    box-shadow: 2px 6px 9px 2px #ef535061;
+  }

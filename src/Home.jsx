@@ -1,5 +1,5 @@
 import React, {Fragment, Component} from "react"
-import firebase from 'firebase'
+import firebase from './index.js'
 import DatePicker from "react-datepicker";
 import empty from './assets/undraw_empty_xct9.svg'
 import Modal from './component/modal'
@@ -27,16 +27,50 @@ class Home extends Component{
         completeActive: false,
         incompleteActive: false,
         trashActive: false,
-        current: 'all'
+        current: 'all',
+        showMenu: false,
+        totalComplete: 0,
+        totalIncomplete: 0,
+        percent: 0,
+        sum: 0,
+        installActive: false,
+        deferredPrompt : null,
+        myStyle: ''
     }
   async  componentDidMount() {
-      await this.setState({
+        await this.setState({
             isLoad : true,
         })
-        // console.log(React.findDOMNode(this.refs.all))
-        // console.log(this.state.isLoad)
         await this.formateDate(this.state.startDate)
         await  this.getData(this.state.startDate)
+    }
+    componentDidUpdate(prevProps, prevState) {
+    //    console.log(prevProps,prevState.startDate )
+    }
+    async countProgress(){
+        if (this.state.current === 'all'){
+            await this.setState({
+                totalComplete : this.state.todolist_completed.length,
+                totalIncomplete : this.state.todolist_incompleted.length,
+                sum : this.state.todos.length
+            })
+            let num = this.state.totalComplete / this.state.sum * 100    
+            if(this.state.sum === 0){
+                await this.setState({
+                    percent : 0
+                })
+            }
+            else{
+                await this.setState({
+                    percent : num
+                })
+            }
+          }
+    }
+    myBarElement = (style) => {
+       return(
+        <div id="myBar" style={{width : `${this.state.percent}%`}}></div>
+       )
     }
     CustomInput(onClick){
         return(
@@ -46,6 +80,7 @@ class Home extends Component{
         )   
     }
     setStartDate = (dt) => {
+        console.log(dt)
         this.setState({
             startDate : dt,
             current : 'all'
@@ -53,19 +88,22 @@ class Home extends Component{
         this.formateDate(dt)
         this.getData(dt)
     }
-    formateDate = (f_date) => {
-        // console.log(f_date)
-        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-        let a = f_date.getDate() + "/" + (f_date.getMonth() + 1) + "/" + f_date.getFullYear()
-        let b = days[f_date.getDay()]
-        this.setState({
-            sel_date : a,
-            day : b
-        })
+    formateDate = async (f_date) => {
+        let now = new Date()
+        if (f_date.toDateString() !== now.toDateString()){
+            var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec",];
+            await this.setState({
+                sel_date : months[(f_date.getMonth())] + " " + (f_date.getDate()) + " " + f_date.getFullYear()
+            })
+        }
+        else{
+            await this.setState({
+                sel_date : "Today's tasks"
+            })
+        }
     }
      getData = async (dt) =>{
         let g_date = dt.getFullYear() + "-" +  (dt.getMonth() + 1) + "-" + dt.getDate() 
-        // let g_date = dt.getDate() + "/" + (dt.getMonth() + 1) + "/" + dt.getFullYear()
         this.state.database.ref('todolist').orderByChild('date').equalTo(g_date).on('value', (snapshot) => { this.realtimedata(snapshot) })     
     }
     realtimedata = async(data)=>{
@@ -76,7 +114,6 @@ class Home extends Component{
         })
         await this.setState({
                 todolist : reads,
-                todos : reads,
                 isLoad : false,
                 hasLoad : true
             })
@@ -85,26 +122,49 @@ class Home extends Component{
             todolist_completed: this.state.todolist.filter((todo)=> { return todo.complete  }),
             todolist_incompleted : this.state.todolist.filter((todo)=> {return !todo.complete}),
         })
-        // console.log(this.state.todos)
-        // console.log(this.state.todolist_incompleted)
+
+        if (this.state.current === 'all'){
+            await this.setState({
+                todos : this.state.todolist
+            })
+        }
+        else if (this.state.current === 'com'){
+            await this.setState({
+                todos : this.state.todolist_completed
+            })
+        }
+        else{
+            await this.setState({
+                todos : this.state.todolist_incompleted
+            })
+        }
+
+        this.countProgress()
     }
     allBtn = async () =>{
         await this.setState({
             todos : this.state.todolist,
-            current : 'all'
+            current : 'all',
+            showMenu : false
         })
+        setTimeout(() => {
+            // console.log(document.getElementById("myBar"))
+          this.countProgress()
+        }, 500);
     }
     comBtn = async () =>{
         // console.log(this.todolist)
         await this.setState({
             todos : this.state.todolist_completed,
-            current : 'com'
+            current : 'com',
+            showMenu : false
         })
     }
     inBtn = async () =>{
         await  this.setState({
             todos : this.state.todolist_incompleted,
-            current: 'incom'
+            current: 'incom',
+            showMenu: false
         })
     }
     editData =async (td) =>{
@@ -146,118 +206,163 @@ return(
 <Fragment>
     <div className="container home">
         <div className="calender-box">
-            <div className="circle">
-                <div id="all" onClick={this.allBtn} className={this.state.current === 'all' ? 'active' : ''}>All</div>
-                <div id="complete" onClick={this.comBtn} className={this.state.current === 'com' ? 'active' : ''}>Complete</div>
-                <div id="incomplete" onClick={this.inBtn} className={this.state.current === 'incom' ? 'active' : ''}>Incomplete</div>
-            </div>
-            <div style={{alignSelf: 'center'}}>
-                <h1>Let's Plan</h1>
-                <div className="capt">
-                    let's try, and feel the ease of managing your schedule</div>
-            </div>
-            <div className="box-date">
-                <div className="cal">
-                    {/* <div></div> */}
-                    <DatePicker selected={this.state.startDate} onChange={date=> this.setStartDate(date)}
-                        customInput={this.CustomInput()}
-                        calendarClassName="getDate" />
-                </div>
-                <div className="date">
-                    <i className="fas fa-sun"></i>
-                    <div style={{fontSize:'16px', opacity:0.7}}>{this.state.day}</div>
-                    <div style={{fontSize:'13px', opacity:0.7}}>{this.state.sel_date}</div>
+            <div className="header">
+                <h1>To-do</h1>
+                <div className="box-date">
+                    <div className="cal">
+                        {/* <div></div> */}
+                        <DatePicker selected={this.state.startDate} onChange={date=> this.setStartDate(date)}
+                            customInput={this.CustomInput()}
+                            calendarClassName="getDate" />
+                    </div>
                 </div>
             </div>
         </div>
-        <div className="card">
-            {this.state.isLoad === true ?
-            <div className="wrapLoad">
-                <div className="lds-roller">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
+        <div className="card"> 
+            <div className="wrapTitle">
+                <div className="wrapDay">
+                    {this.state.current==='all'? 
+                      <h2>{this.state.sel_date}</h2>
+                    : this.state.current==='com' ?
+                      <h2>Complete tasks</h2>
+                    :
+                      <h2>Incomplete tasks</h2>
+                     }
+                    
+                    <div className="btnFilter" onClick={async () => {
+                        await this.setState ({
+                            showMenu : !this.state.showMenu
+                        })}} >
+                    <i className="fas fa-filter"></i>
+                    </div>
+                    <div className={this.state.showMenu? "circle show" : "circle"}>
+                        <div id="all" onClick={this.allBtn} className={this.state.current === 'all' ? 'active' : ''}>All</div>
+                        <div id="complete" onClick={this.comBtn} className={this.state.current === 'com' ? 'active' : ''}>Complete</div>
+                        <div id="incomplete" onClick={this.inBtn} className={this.state.current === 'incom' ? 'active' : ''}>Incomplete</div>
+                    </div>
                 </div>
+                {this.state.current==='all'?
+                    <div>
+                       <div className="unfinished">{this.state.totalIncomplete} unfinished tasks from total {this.state.sum} </div>
+                       <div className="meter">
+                           {this.myBarElement()}
+                           {/* <div id="myBar" style={this.state.myStyle} ></div> */}
+                       </div>
+                   </div>
+                   : this.state.current==='com' ?
+                   <div>
+                        <div style={{color: '#60563d'}}>{this.state.totalComplete} tasks </div>
+                   </div>
+                   :
+                   <div>
+                       <div style={{color: '#60563d'}} >{this.state.totalIncomplete} tasks </div>
+                   </div>
+                }
+             
             </div>
-            : ''
-            }
-            {this.state.hasLoad ?
-            <div>
-                {this.state.todos.length === 0 ?
-                <div>
-                    <img src={empty} alt="" width="100%" />
-                    <div className="empty">No plan yet..</div>
-                    <div className="btn-float" onClick={(async () => {
-                       await this.setState ({
-                            addActive : true
-                        })
-                    })}>
-                        <button><i className="fas fa-plus"></i></button>
+
+            <div className="card-box">
+                {this.state.isLoad === true ?
+                <div className="wrapLoad">
+                    <div className="lds-roller">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
                     </div>
                 </div>
-                :
+                : ''
+                }
+                {this.state.hasLoad ?
                 <div>
-                    <ul style={{marginLeft:'20px', paddingLeft: '0px'}}>
-                        {this.state.todos.map((td, index) => {
-                        return (
-                        <li className="card-list" key={index}>
-                            <div className={td.complete? 'title cross' : 'title' }>{td.name}</div>
-                            <div className={td.complete? 'card-desc cross' : 'card-desc' }>{td.notes} </div>
-                            <div className="btn-group">
-                                {td.complete ?
-                                 <div
-                                   onClick={async () => {
-                                    await this.setState ({
-                                         id_td : td.id,
-                                         complete : td.complete,
-                                         incompleteActive: true
-                                     })
-                                 }}><i className="fas fa-times"></i></div>
-                                : <div onClick={async () => {
-                                    await this.setState ({
-                                         id_td : td.id,
-                                         complete : td.complete,
-                                         completeActive: true
-                                     })
-                                 }}
-                                  ><i className="fas fa-check"></i></div>
-                                }
-                                <div onClick={() => this.editData(td)}><i className="far fa-edit"></i></div>
-                                <div onClick={async () =>{
-                                    await this.setState ({
-                                        id_td: td.id,
-                                        trashActive: true
-                                    })}}><i className="far fa-trash-alt"></i></div>
-                            </div>
-                        </li>
-                        )
-                        })}
-                    </ul>
-                    <div className="btn-float" onClick={async () => {
-                       await this.setState ({
-                            addActive : true
-                        })
-                    }}>
-                        <button><i className="fas fa-plus"></i></button>
+                    {this.state.todos.length === 0 ?
+                    <div>
+                        <img src={empty} alt="" width="100%" />
+                        <div className="empty">No plan yet..</div>
+                        <div className="btn-float" onClick={(async () => {
+                        await this.setState ({
+                                addActive : true
+                            })
+                        })}>
+                            <button><i className="fas fa-plus"></i></button>
+                        </div>
                     </div>
+                    :
+                    <div>
+                        <ul style={{listStyleType: 'none'}}>
+                            {this.state.todos.map((td, index) => {
+                            return (
+                            <li className="card-list" key={index}>
+                                   <div className="btn-check">
+                                    {td.complete ?
+                                        <div
+                                        onClick={async () => {
+                                            await this.setState ({
+                                                id_td : td.id,
+                                                complete : td.complete,
+                                                incompleteActive: true
+                                            })
+                                        }}><i className="fas fa-check-circle"></i></div>
+                                        : <div onClick={async () => {
+                                            await this.setState ({
+                                                id_td : td.id,
+                                                complete : td.complete,
+                                                completeActive: true
+                                            })
+                                        }}
+                                        ><i className="far fa-circle"></i></div>
+                                        }
+                                    </div>
+                                <div  style={{width: "73%", marginRight: "8px"}}>
+                                    <div className={td.complete? 'title cross' : 'title' }>{td.name}</div>
+                                    {td.notes !== ''? 
+                                     <div className={td.complete? 'card-desc cross' : 'card-desc' }>{td.notes} </div>
+                                     : ''
+                                    }
+                                   
+                                </div>
+                               
+                                <div className="btn-group">
+                                    <div onClick={() => this.editData(td)}><i className="far fa-edit"></i></div>
+                                    <div onClick={async () =>{
+                                        await this.setState ({
+                                            id_td: td.id,
+                                            trashActive: true
+                                        })}}><i className="far fa-trash-alt"></i></div>
+                                </div>
+                            </li>
+                            )
+                            })}
+                        </ul>
+                        <div className="btn-float" onClick={async () => {
+                        await this.setState ({
+                                addActive : true
+                            })
+                        }}>
+                            <button><i className="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                    }
                 </div>
+                : ''
                 }
             </div>
-            : ''
-            }
         </div>
-            <Modal modalActive={this.state.addActive} type={'add'} dataModal={this.state.dataModal} changeModal={async () => {
+            <Modal modalActive={this.state.addActive} type={'add'} dataModal={this.state.dataModal} 
+                    changeModal={async () => {
                        await this.setState ({
                             addActive : false
                         })
                     }}
+                    updateStartDate={this.setStartDate}
             />
-            <Modal modalActive={this.state.editActive} type={'edit'} dataModal={this.state.dataModal} changeModal={async () => {
+            <Modal modalActive={this.state.editActive} type={'edit'} dataModal={this.state.dataModal} 
+                    changeModal={async () => {
                        await this.setState ({
                             editActive : false
                         })
                     }}
+                    updateStartDate={this.setStartDate}
              />
              <ModalConf type={'complete'} confirmActive={this.state.completeActive} yesBtn={this.changeComplete} cancelBtn = {async () => {
                        await this.setState ({
@@ -275,7 +380,6 @@ return(
                     })
              }
              }/>
-             {/* <ModalConf type={'trash'}/> */}
     </div>
 </Fragment>
 )
