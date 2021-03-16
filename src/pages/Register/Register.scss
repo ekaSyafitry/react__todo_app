@@ -1,0 +1,36 @@
+.register{
+    color: #60563d;
+    h1{
+        text-align: center;
+    }
+    form{
+        margin: 1rem 0;
+        label{
+            display: block;
+        }
+        input{
+            border: none;
+            margin-bottom: 10px;
+            padding: 9px;
+            box-shadow: none;
+            margin-top: 8px;
+            width: 100%;
+            max-width: 400px;
+        }
+        button{
+            padding: 11px 2rem;
+            box-shadow: none;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            background-color: #984d35;
+            color: #fff;
+        }
+        div{
+            text-align: center;
+        }
+    }
+    a{
+        color: #fff;
+    }
+}

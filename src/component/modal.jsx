@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import './modal.scss'
 import DatePicker from "react-datepicker";
-import firebase from 'firebase'
+import axios from "../axios"
 
 
 const Modal = (props) => {
@@ -16,42 +16,62 @@ const Modal = (props) => {
 
     useEffect(() => {
         setDataName(props.dataModal.name);
-        setDataNotes(props.dataModal.notes)
+        setDataNotes(props.dataModal.note)
         setDataDate(props.dataModal.date)
-      }, [props.dataModal.name, props.dataModal.notes,props.dataModal.date ] );
+      }, [props.dataModal.name, props.dataModal.note,props.dataModal.date ] );
      
     // console.log(data_name)
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         if (props.type === 'add'){
             e.preventDefault()
             let frmt_date = startDate.getFullYear() + "-" + (startDate.getMonth() + 1) + "-" + startDate.getDate()
-            const rootRef = firebase.database().ref('todolist')
-            const autoId = rootRef.push().key
-            rootRef.child(autoId).set({
-              name: name,
-              notes: notes,
-              date: frmt_date,
-              complete: false
-            })
-            props.updateStartDate(startDate)
-            alert('Success add data !!')
-            setName('')
-            setNotes('')
-            setStartDate(new Date())
-            props.changeModal()
+            try{
+                const postTodo = await axios({
+                    method: 'post',
+                    url: '/todo/post',
+                    // headers: {
+                    //   Authorization: 'bW5jaW5ub2NlbnQ='
+                    // },
+                    data: {
+                        name: name,
+                        note: notes,
+                        date: frmt_date,
+                    }
+                  })
+                  console.log(postTodo)
+                alert('Success add data !!')
+                props.updateStartDate(startDate)  
+                setName('')
+                setNotes('')
+                setStartDate(new Date())
+                props.changeModal()
+            }
+            catch (err){
+                console.log(err)
+            }
+           
         }
         else{
             e.preventDefault()
             let frmt_date = data_date.getFullYear() + "-" + (data_date.getMonth() + 1) + "-" + data_date.getDate()
-            firebase.database().ref('todolist').child(props.dataModal.id).update({
-              name: data_name,
-              notes: data_notes,
-              date: frmt_date
-            });
-            props.updateStartDate(data_date)
-            alert('Success edit data !!')
-            props.changeModal()
-            // console.log(data_name)
+            try{
+                console.log(props.dataModal._id)
+                const updateTodo = await axios({
+                    method: 'put',
+                    url: `/todo/update/${props.dataModal._id}`,
+                    data: {
+                        name: data_name,
+                        note: data_notes,
+                        date: frmt_date,
+                    }
+                })
+                console.log(updateTodo)
+                props.updateStartDate(data_date)
+                alert('Success edit data !!')
+                props.changeModal()
+            }catch (err){
+                console.log(err)
+            }          
         }
     }
     
