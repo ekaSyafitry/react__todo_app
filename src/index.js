@@ -8,7 +8,7 @@ import { BrowserRouter } from "react-router-dom";
 import * as serviceWorker from './serviceWorker';
 
 // Disable console log on production
-if (process.env.REACT_APP_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
     console.log = function () {};  
 }
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
