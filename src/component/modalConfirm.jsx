@@ -18,14 +18,18 @@ const ModalConf = (props) => {
             <div >
                 <div className="title"> Are you sure to delete data?</div>
             </div>
-            : 
+            : props.type === 'install'?
             <div>
                  <div className="title"> Do you like this application?</div>
             </div>
+            :
+            <div>
+             <div className="title"> Are you sure to log out?</div>
+             </div>
             } 
             {props.type === 'install'?
             <div style={{display:'flex', justifyContent: 'space-between'}}> 
-                <button className="btnY" onClick={()=> props.yesBtn()}>Download Now</button> 
+                <div><button className="btnY" onClick={()=> props.yesBtn()}>Download Now</button> </div>
                 <button className="btnN" onClick={()=> props.cancelBtn()}>Cancel</button> 
             </div>
             :
@@ -33,9 +37,8 @@ const ModalConf = (props) => {
                 <button className="btnYes" onClick={()=> props.yesBtn()}>Yes</button> 
                 <button className="btnN" onClick={()=> props.cancelBtn()}>Cancel</button> 
             </div>
-        }
-    
-            
+         }
+
         </div>
     </div>
     )

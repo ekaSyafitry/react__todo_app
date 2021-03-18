@@ -7,11 +7,10 @@ import ModalConf from '../../component/modalConfirm'
 import Loader from '../../component/loader'
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "../../axios";
+import Cookies from "js-cookie";
 
 //scss
 import './Dashboard.scoped.scss'
-import Cookies from "js-cookie";
-
 class dashboard extends Component{
     state ={
         startDate: new Date(),
@@ -39,32 +38,17 @@ class dashboard extends Component{
         percent: 0,
         sum: 0,
         installActive: false,
-        deferredPrompt : null
-    }
-    componentWillMount = async () => {      
-        const token = Cookies.get('token')
-        console.log("componentWillMount", token)
-        try{
-            const valToken = await axios.get("/user/validateToken", {
-                headers: {
-                    'Authorization' : token
-                }
-            })
-            console.log(valToken)
-        }catch(err){
-            console.log(err.response)
-            Cookies.remove('token')
-            this.props.history.push("/login")
-        }
+        deferredPrompt : null,
+        userData: {},
+        logOutActive: false,
+        token : Cookies.get('token')
     }
   async componentDidMount() {
       console.log("componentDidMount")
         await this.setState({
             isLoad : true,
         })
-        await this.formateDate(this.state.startDate)
-        await  this.getData(this.state.startDate)
-
+        await this.checkIsAuth()
         window.addEventListener('beforeinstallprompt', (e) => {
             this.showInstallPromt(e);
         });
@@ -74,6 +58,29 @@ class dashboard extends Component{
                 installActive :  !this.state.installActive,
             })
         });
+    }
+    checkIsAuth = async () => {      
+        // const token = Cookies.get('token')
+        // console.log("componentWillMount", token)
+        if(!this.state.token) return this.props.history.push("/login")
+    
+        try{
+            const valToken = await axios.get("/user/getUser", {
+                headers: {
+                    'Authorization' : this.state.token
+                }
+            })
+            
+            await this.setState({
+                userData: valToken.data.data
+            })
+            await this.formateDate(this.state.startDate)
+            await  this.getData(this.state.startDate)
+        }catch(err){
+            console.log(err.response)
+            Cookies.remove('token')
+            this.props.history.push("/login")
+        }
     }
     installModal = async () =>{
         await this.setState({
@@ -145,14 +152,16 @@ class dashboard extends Component{
      getData = async (dt) =>{
         let g_date = dt.getFullYear() + "-" +  (dt.getMonth() + 1) + "-" + dt.getDate() 
         try{
-            let todoList = await axios.get(`/todo/${g_date}`);
+            let todoList = await axios.get(`/todo/${g_date}`,{
+                headers: {
+                    'Authorization' : this.state.token
+                }
+            });
             console.log(todoList)
             await this.handleData(todoList.data.data)
         } catch (err){
-            console.log(err)
+            console.log(err.response)
         }
-        
-        // this.state.database.ref('todolist').orderByChild('date').equalTo(g_date).on('value', (snapshot) => { this.realtimedata(snapshot) })     
     }
     handleData = async(data)=>{
         
@@ -221,31 +230,47 @@ class dashboard extends Component{
         // console.log(this.state.dataModal)
     }
     changeComplete = async () =>{
-        // console.log(this.state.complete)
+        await this.setState({
+            isLoad: true
+        })
         if (this.state.complete) {
-            // this.state.database.ref('todolist/' + this.state.id_td + '/complete').set(
-            //     false
-            // );
             try{
-               const updateComplete = await axios.put(`/todo/updateComplete/${this.state.id_td}/false`);
+               const updateComplete = await axios.get(`/todo/updateComplete/${this.state.id_td}/false`, {
+                headers: {
+                    Authorization: this.state.token
+                  }
+               });
                console.log(updateComplete)
                await  this.setState({
-                incompleteActive: false
+                incompleteActive: false,
+                // isLoad: false
                 })
                 this.getData(this.state.startDate)
             }catch (err){
-                console.log(err)
+                await this.setState({
+                    isLoad: false
+                })
+                console.log(err.response)
             }       
         } else {
+            console.log(this.state.id_td)
             try{
-                const updateComplete = await axios.put(`/todo/updateComplete/${this.state.id_td}/true`);
+                const updateComplete = await axios.get(`/todo/updateComplete/${this.state.id_td}/true`,{
+                    headers: {
+                        Authorization: this.state.token
+                      },
+                });
                 console.log(updateComplete)
                 await  this.setState({
-                    completeActive: false
+                    completeActive: false,
+                    // isLoad: false
                 })
                 this.getData(this.state.startDate)
              }catch (err){
-                console.log(err)
+                await this.setState({
+                    isLoad: false
+                })
+                console.log(err.response)
              } 
            
         }
@@ -253,7 +278,11 @@ class dashboard extends Component{
     deleteData = async () => {
         console.log(this.state.id_td)
         try{
-            let todoRemove = await axios.delete(`/todo/delete/${this.state.id_td}`);
+            let todoRemove = await axios.delete(`/todo/delete/${this.state.id_td}`,{
+                headers: {
+                    Authorization: this.state.token
+                },
+            });
             console.log(todoRemove)
             this.setState({
                 trashActive : false
@@ -263,6 +292,10 @@ class dashboard extends Component{
             console.log(err)
         }  
     }
+    logOutModal = async () =>{
+        Cookies.remove('token')
+        this.props.history.push('/login')
+    }
 render(){
     // console.log("render")
 return(
@@ -271,15 +304,23 @@ return(
         <div className="calender-box">
             <div className="header">
                 <h1>To-do</h1>
-                <div className="box-date">
+                <h3>Welcome  {this.state.hasLoad?this.state.userData.firstname : ""} !</h3>  
+            </div>
+            <div className="menu-icon">
+            <div onClick={async () => {
+                        await this.setState ({
+                            logOutActive : true
+                        })}}><i className="fas fa-sign-out-alt"></i></div>
+            <div className="box-date">
                     <div className="cal">
                         {/* <div></div> */}
                         <DatePicker selected={this.state.startDate} onChange={date=> this.setStartDate(date)}
                             customInput={this.CustomInput()}
                             calendarClassName="getDate" />
                     </div>
-                </div>
-            </div>
+             </div>
+           
+             </div>
         </div>
         <div className="card"> 
             <div className="wrapTitle">
@@ -442,6 +483,12 @@ return(
              <ModalConf type={'install'} confirmActive={this.state.installActive}  yesBtn={this.installModal} cancelBtn={async () => {
                       await this.setState ({
                         installActive : false
+                    })
+             }
+             } />
+                <ModalConf type={'logOut'} confirmActive={this.state.logOutActive}  yesBtn={this.logOutModal} cancelBtn={async () => {
+                      await this.setState ({
+                        logOutActive : false
                     })
              }
              } />

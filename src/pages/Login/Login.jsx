@@ -14,7 +14,12 @@ class Login extends Component{
     state = {
         isLoad: false,
         email: "",
-        password: ""
+        password: "",
+        token: Cookies.get('token')
+    }
+    componentDidMount = () => {
+        console.log(this.state.token)
+        if(this.state.token) return this.props.history.push('/dashboard')
     }
     handleInputChange = (event) => {
         const value = event.target.value;
@@ -45,8 +50,8 @@ class Login extends Component{
             await this.setState({
                 isLoad: false
             })
-            alert(`${err.response.statusText}`)
-            console.log(err.response.statusText)
+            alert(`${err.response.data.message}`)
+            console.log(err.response)
          }
     }
     render(){

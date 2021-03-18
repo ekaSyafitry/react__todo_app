@@ -21,7 +21,7 @@ class LandingPage extends Component{
                 <p>Planning the daily work,
                     it has never been so impacting                  
                 </p>
-               <Link to="/register"> <button>Start</button> </Link>
+               <Link to="/login"> <button>Start</button> </Link>
                 </div>
                
                 </div>

@@ -2,10 +2,12 @@ import React, {useState, useEffect} from 'react'
 import './modal.scss'
 import DatePicker from "react-datepicker";
 import axios from "../axios"
+import Cookies from "js-cookie";
 
 
 const Modal = (props) => {
     // console.log(props.dataModal, 'props')
+    const token = Cookies.get('token')
     const modalActive = props.modalActive
     const [startDate, setStartDate] = useState(new Date());
     const [name, setName] = useState('')
@@ -29,9 +31,9 @@ const Modal = (props) => {
                 const postTodo = await axios({
                     method: 'post',
                     url: '/todo/post',
-                    // headers: {
-                    //   Authorization: 'bW5jaW5ub2NlbnQ='
-                    // },
+                    headers: {
+                      Authorization: token
+                    },
                     data: {
                         name: name,
                         note: notes,
@@ -47,7 +49,7 @@ const Modal = (props) => {
                 props.changeModal()
             }
             catch (err){
-                console.log(err)
+                console.log(err.response)
             }
            
         }
@@ -59,6 +61,9 @@ const Modal = (props) => {
                 const updateTodo = await axios({
                     method: 'put',
                     url: `/todo/update/${props.dataModal._id}`,
+                    headers: {
+                        Authorization: token
+                    },
                     data: {
                         name: data_name,
                         note: data_notes,

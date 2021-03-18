@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import LandingPage from './pages/LandingPage/LandingPage';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
+import notFound from "./404";
 // import Notfound from '../public/404.hmtl'
 
 class Home extends Component{
@@ -23,6 +24,7 @@ class Home extends Component{
              <Route path="/dashboard" component={Dashboard}></Route>
              <Route path="/register" component={Register}></Route>
              <Route path="/login" component={Login}></Route>
+             <Route path="*" component={notFound}></Route>
              {/* <Route path="*"  component={Notfound}> </Route> */}
              </Switch>
          </Router>

@@ -1,6 +1,7 @@
 import React, {Fragment, Component} from "react"
 import Loader from '../../component/loader'
 import axios from '../../axios'
+import Cookies from "js-cookie";
 import {
     Link
   } from "react-router-dom";
@@ -15,7 +16,12 @@ class LandingPage extends Component{
         email: "",
         password: "",
         confPassword: "",
-        isLoad: false
+        isLoad: false,
+        token: Cookies.get('token')
+    }
+    componentDidMount = () => {
+        console.log(this.state.token)
+        if(this.state.token) return this.props.history.push('/dashboard')
     }
     handleRegister = async (e) => {
         console.log("laaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
