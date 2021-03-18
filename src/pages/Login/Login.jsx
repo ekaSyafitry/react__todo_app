@@ -44,7 +44,6 @@ class Login extends Component{
             })
             Cookies.set('token', loginData.data.data.token);
             this.props.history.push("/dashboard")
-            // document.cookie=`token=${loginData.data.data.token};"${cookieOptions}"`
             console.log(loginData, 'logindata')
          }catch (err){
             await this.setState({

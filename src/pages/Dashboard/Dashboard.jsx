@@ -151,6 +151,7 @@ class dashboard extends Component{
     }
      getData = async (dt) =>{
         let g_date = dt.getFullYear() + "-" +  (dt.getMonth() + 1) + "-" + dt.getDate() 
+        console.log(g_date, 'dateeeeeeeeee')
         try{
             let todoList = await axios.get(`/todo/${g_date}`,{
                 headers: {
