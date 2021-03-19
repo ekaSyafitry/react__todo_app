@@ -43,6 +43,9 @@ class Login extends Component{
                 }
             })
             Cookies.set('token', loginData.data.data.token);
+            await this.setState({
+                isLoad: false
+            })
             this.props.history.push("/dashboard")
             console.log(loginData, 'logindata')
          }catch (err){

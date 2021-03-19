@@ -30,7 +30,10 @@ class LandingPage extends Component{
             isLoad: true
         })
         if (this.state.password !== this.state.confPassword){
-            alert('password not match!')
+            await this.setState({
+                isLoad: false
+            })
+           return alert('password not match!')
         }
         try{
             const register = await axios({
@@ -49,6 +52,7 @@ class LandingPage extends Component{
                 isLoad: false
             })
             alert('Success Register, silahkan melakukan Log in !!')
+            this.props.history.push('/login')
         }catch (err){
             await this.setState({
                 isLoad: false
